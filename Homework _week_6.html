@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi"
+      crossorigin="anonymous"
+    />
+    <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
+    <title>Weather App
+    </title>
+</head>
+<style>
+    body {
+  padding: 20px 20px;
+  max-width: 500px;
+  border-style: solid;
+  border-color: #5a6275;
+  border-width: 3px;
+  border-radius: 10px;
+  margin-top: 20px;
+  margin: 0 auto;
+}
+h1 {
+  font-size: 50px;
+}
+span.temperature {
+  font-size: 60px;
+}
+span.units {
+  font-size: 40px;
+}
+
+.cities {
+  border-style: solid;
+  border-color: #41a5f5;
+  border-width: 3px;
+  padding: 10px 10px;
+  border-radius: 10px;
+}
+.main-information {
+  font-family: "Inconsolata", monospace;
+}
+.five-days {
+  text-align: center;
+}
+
+</style>
+<body>
+     <div class="cities-tab">
+      <div class="cities">
+        <div class="row">
+          <div class="col">Bangkok</div>
+          <div class="col">Cape Town</div>
+          <div class="col">Amsterdam</div>
+          <div class="col">London</div>
+        </div>
+      </div>
+    </div>
+  </br>
+    <form class="row g-3" id="search-form">
+      <div class="col-auto">
+        <label for="inputPassword2" class="visually-hidden">Enter City</label>
+        <input
+          type="text"
+          class="form-control"
+          id="city-input"
+          placeholder="Enter City"
+        />
+      </div>
+
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary mb-3 w-100">Search</button>
+      </div>
+       <div class="col-3">
+        <button class="btn btn-success w-100" id="current-location-button">
+        Current
+        </button>
+      </div>
+    </form>
+
+    <div class="main-information">
+      <h2 id="city">
+        <strong></strong>
+      </h2>
+      <h3 id="date">
+        </h3>
+      <p><span id="description"></span>
+    </p>
+    </br>
+    <div class="float-left"> 
+      <span class="temperature" id="temperature">
+        
+      </span>
+      <span class="units">
+            <a>°C</a>    
+      </span>
+        </div>
+      
+    </br>
+    </div>
+
+    <div class="five-days">
+      <div class="days">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5">
+          <div class="col">Sunday</div>
+          <div class="col">Monday</div>
+          <div class="col">Tuesday</div>
+          <div class="col">Wednesday</div>
+          <div class="col">Thursday</div>
+        </div>
+      </div>
+    </br>
+      <div class="emojis">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5">
+          <div class="col">🌦</div>
+          <div class="col">🌧</div>
+          <div class="col">🌧</div>
+          <div class="col">☀️</div>
+          <div class="col">☀️</div>
+        </div>
+      </div>
+    </br>
+      <div class="temperature">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5">
+          <div class="col">31°</div>
+          <div class="col">30°</div>
+          <div class="col">30°</div>
+          <div class="col">31°</div>
+          <div class="col">32°</div>
+        </div>
+      </div>
+    </div>
+    <script>
+       function formatDate(date) {
+  let hours = date.getHours();
+  if (hours < 10) {
+    hours = `0${hours}`;
+  }
+
+  let minutes = date.getMinutes();
+  if (minutes < 10) {
+    minutes = `0${minutes}`;
+  }
+
+  let dayIndex = currentTime.getDay();
+  let days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ];
+  let day = days[dayIndex];
+  return `${day} ${hours}:${minutes}`;
+}
+function searchLocation(position){
+  let apiKey = "11d3102a864acd14415838fd65caaf90";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${position.coords.latitude}&lon=${position.coords.longitude}&appid=${apiKey}&units=metric`;
+  axios.get(apiUrl).then(displayWeatherCondition);
+
+}
+function getCurrentLocation(event) {
+event.preventDefault();
+navigator.geolocation.getCurrentPosition(searchLocation);
+}
+
+function showTemperature(response) {
+  console.log(response.data.main.temp);
+  let temperature = Math.round(response.data.main.temp);
+  let temperatureElement = document.querySelector("#temperature");
+  let description = document.querySelector("#description");
+  temperatureElement.innerHTML = `${temperature}`;
+  description.innerHTML = response.data.weather[0].description;
+}
+
+function displayWeatherCondition(response) {
+  document.querySelector("#city").innerHTML = response.data.name;
+  document.querySelector("#temperature").innerHTML = Math.round(
+    response.data.main.temp
+  );
+  document.querySelector("#description").innerHTML =
+    response.data.weather[0].description;
+}
+
+function searchCity(city) {
+  let apiKey = "11d3102a864acd14415838fd65caaf90";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&&appid=${apiKey}&units=metric`;
+  axios.get(apiUrl).then(displayWeatherCondition);
+}
+
+function handleSubmit(event) {
+  event.preventDefault();
+  let city = document.querySelector("#city-input").value;
+  searchCity(city);
+}
+
+let dateElement = document.querySelector("#date");
+let currentTime = new Date();
+dateElement.innerHTML = formatDate(currentTime);
+
+let searchForm = document.querySelector("#search-form");
+searchForm.addEventListener("submit", handleSubmit);
+
+let currentLocationButton = document.querySelector("#current-location-button");
+currentLocationButton.addEventListener("click", getCurrentLocation);
+
+searchCity("Bangkok");
+
+    </script>
+</body>
+</html>
